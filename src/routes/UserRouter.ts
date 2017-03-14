@@ -1,4 +1,4 @@
-import {Router, Request, Response, NextFunction} from 'express' 
+import { Router, Request, Response, NextFunction } from 'express' 
 const User = require('../data') 
 var MongoClient = require('mongodb').MongoClient 
 var Db = require('mongodb').Db
@@ -16,7 +16,7 @@ export class UserRouter {
    constructor() {
      this.router = Router() 
      this.init() 
-     this.url = 'mongodb://localhost:27017/data' 
+     this.url = 'mongodb://35.184.119.147:27017/data' 
 
      MongoClient.connect(this.url, function(err, db) {
        if(err !== null){
@@ -36,10 +36,6 @@ export class UserRouter {
      var collection = Db.collection('users') 
 
      collection.insertOne({nome: "Jefferson Lucena"}, function(err, r) {
-       assert.equal(null, err) 
-       assert.equal(1, r.insertedCount) 
-
-       Db.close() 
        if (err !== null) {
          res.send("Error")
        } else {
@@ -53,14 +49,12 @@ export class UserRouter {
    */
    public getAll(req: Request, res: Response, next: NextFunction) {
      var collection = Db.collection('users') 
-     var users
 
-     collection.find({}).toArray(function(err, docs) {
+     collection.find().toArray(function(err, users) {
        if (err !== null) {
-         res.send(err)
+         res.status(404).send(err)
        } else {
-         Db.close()   
-         res.send(docs)
+         res.send(users)
        }
      }) 
    }

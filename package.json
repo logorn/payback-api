@@ -28,10 +28,15 @@
     "typescript": "^2.0.0"
   },
   "dependencies": {
+    "@angular/common": "2.2.1",
+    "@angular/compiler": "2.2.1",
+    "@angular/compiler-cli": "2.2.1",
+    "@angular/core": "2.2.1",
     "body-parser": "^1.15.2",
     "debug": "^2.2.0",
     "express": "^4.14.0",
     "mongodb": "^2.2.24",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "rxjs": "^5.2.0"
   }
 }
