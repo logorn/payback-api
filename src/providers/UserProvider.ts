@@ -26,10 +26,10 @@ export class UserProvider {
    	return new Promise((resolve, reject) => {
    		db.collection("users")
    		.insertOne(user, (err, r) => {
-   			if (err !== null) {
+   			if(err !== null){
                db.close()
    				reject("Error")
-   			} else {
+   			}else{
                db.close()
    				resolve("User stored")
    			}
@@ -42,10 +42,10 @@ export class UserProvider {
    		db.collection("users")
    		.find({})
    		.toArray((err, users) => {
-   			if (err !== null) {
+   			if(err !== null){
                db.close()
    				reject(err)
-   			} else {
+   			}else{
                db.close()
    				resolve(users)
    			}
@@ -59,10 +59,10 @@ export class UserProvider {
    		.findOne({
    			"_id": ObjectId(id)
    		}, (err, user) => {
-   			if (err !== null) {
+   			if(err !== null){
                db.close()
    				reject(err)
-   			} else {
+   			}else{
                db.close()
    				resolve(user)
    			}
