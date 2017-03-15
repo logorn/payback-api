@@ -11,14 +11,14 @@ export class UserProvider{
 	public connect(){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.mongodb.users, (err, db) => {
-					if(err !== null){
-						console.error(err)
-						reject(err)
-					}else{
-						console.log("Connected successfully to server")
-						resolve(db)
-					}
-			 })
+				if(err !== null){
+					console.error(err)
+					reject(err)
+				}else{
+					console.log("Connected successfully to server")
+					resolve(db)
+				}
+			})
 		})
 	}
 
