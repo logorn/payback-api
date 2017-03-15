@@ -1,7 +1,5 @@
-import { Injectable } from '@angular/core'
 import { CostCenterModel } from './cost-center'
 
-@Injectable()
 export class CompanyModel {
 
 	public id: number

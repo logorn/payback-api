@@ -1,85 +1,63 @@
-import { Router, Request, Response, NextFunction } from 'express' 
-const User = require('../data') 
-var MongoClient = require('mongodb').MongoClient 
-var Db = require('mongodb').Db
-var assert = require('assert') 
+import { Router, Request, Response, NextFunction } from 'express'
+import { UserProvider } from '../providers/UserProvider'
+import { UserModel } from '../model/user'
 
 export class UserRouter {
-  router: Router
+  public router: Router
+  private userProvider: UserProvider
 
-  /**
-   * Initialize the UserRouter
-   */
-
-   private url: string 
-
-   constructor() {
-     this.router = Router() 
-     this.init() 
-     this.url = 'mongodb://35.184.119.147:27017/data' 
-
-     MongoClient.connect(this.url, function(err, db) {
-       if(err !== null){
-         console.error(err)  
-       }else{
-         Db = db
-         console.log("Connected successfully to server") 
-       }
-     }) 
-   }
+  constructor() {
+    this.router = Router() 
+    this.init()
+  }
 
   /**
    * POST create a new User.
    */
-
    public createOne(req: Request, res: Response, next: NextFunction) {
-     var collection = Db.collection('users') 
-
-     collection.insertOne({nome: "Jefferson Lucena"}, function(err, r) {
-       if (err !== null) {
-         res.send("Error")
-       } else {
-         res.send("User stored")
-       }
-     }) 
+     let user = new UserModel()
+     user.company = Number(req.body.company)
+     user.email = req.body.email
+     user.confirmPassword = req.body.confirmPassword
+     user.password = req.body.password
+     user.name = req.body.name
+     user.phone = req.body.phone
+     console.log(req)
+     console.log(user)
+     if(user.isValid()){
+       let userService = new UserProvider()
+       userService.connect()
+       .then(db => userService.createOne(db, user))
+       .then(status => res.send(status))
+       .catch(err => res.status(500).send(err))
+     }else {
+       res.status(406).send("not_valid")
+     }
    }
 
   /**
    * GET all Users.
    */
    public getAll(req: Request, res: Response, next: NextFunction) {
-     var collection = Db.collection('users') 
-
-     collection.find().toArray(function(err, users) {
-       if (err !== null) {
-         res.status(404).send(err)
-       } else {
-         res.send(users)
-       }
-     }) 
+     console.log("getAll")
+     let userService = new UserProvider()
+     userService.connect()
+     .then(db => userService.getAll(db))
+     .then(users => res.send(users))
+     .catch(err => res.send(err))
    }
 
   /**
    * GET one user by id
    */
    public getOne(req: Request, res: Response, next: NextFunction) {
-     let query = parseInt(req.params.id) 
-     let user = User.find(user => user.id === query) 
-     if (user) {
-       res.status(200)
-       .send({
-         message: 'Success',
-         status: res.status,
-         user
-       }) 
-     }
-     else {
-       res.status(404)
-       .send({
-         message: 'No user found with the given id.',
-         status: res.status
-       }) 
-     }
+     var id = req.params.id
+
+     let userService = new UserProvider()
+     userService.connect()
+     .then(db => userService.getOne(db, id))
+     .then(users => res.send(users))
+     .catch(err => res.send(err))
    }
 
   /**
@@ -89,7 +67,7 @@ export class UserRouter {
    init() {
      this.router.get('/', this.getAll) 
      this.router.get('/:id', this.getOne) 
-     this.router.post('/', this.createOne) 
+     this.router.post('/', this.createOne)
    }
 
  }

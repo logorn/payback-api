@@ -1,0 +1,5 @@
+{
+  "mongodb": {
+  	"users": "mongodb://104.154.184.18:666/data"
+  } 
+}

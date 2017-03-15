@@ -1,9 +1,4 @@
-import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
-
-@Injectable()
-export class UserModel  {
-	public id: string
+export class UserModel {
 	public email: string
 	public name: string
 	public password: string
@@ -11,7 +6,7 @@ export class UserModel  {
 	public phone: string
 	public company: number
 
-	constructor() {}
+	constructor () {}
 
 	isValidPassword () {
 		return this.password !== undefined 
@@ -49,5 +44,12 @@ export class UserModel  {
 	isValidCompany () {
 		return this.company !== undefined 
 		&& this.company > 0
+	}
+
+	isValid () {
+		return this.isValidCompany()
+		&& this.isValidName()
+		&& this.isValidPassword()
+		&& this.isValidPhone()
 	}
 }

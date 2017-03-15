@@ -1,9 +1,6 @@
-import { Injectable } from '@angular/core';
 import { CostCenterModel } from './cost-center'
 import { UserModel } from './user'
-import 'rxjs/add/operator/map';
 
-@Injectable()
 export class RefundModel {
 	public expenseDate: string
 	public checkingCopy: string
