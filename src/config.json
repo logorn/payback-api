@@ -1,5 +1,6 @@
 {
   "mongodb": {
   	"users": "mongodb://localhost:27017/data"
-  } 
+  },
+  "tokenSecret": "littlesecret"
 }

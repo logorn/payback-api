@@ -54,7 +54,7 @@ db.users.insertMany([{
 	confirmPassword: "senha123",
 	phone: "5511910101212",
 	company: 1
-},{
+}-a,{
 	email: "fulano@empresa.com.br",
 	name: "Fulano da Silva",
 	password: "senha123",

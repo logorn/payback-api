@@ -1,4 +1,5 @@
 import UserRouter from './routes/UserRouter' 
+import AuthRouter from './routes/AuthRouter' 
 import * as path from 'path' 
 import * as express from 'express' 
 import * as logger from 'morgan' 
@@ -37,7 +38,8 @@ class App {
       }) 
     }) 
     this.express.use('/', router) 
-    this.express.use('/api/v1/users', UserRouter) 
+    this.express.use('/api/v1/users', UserRouter)
+    this.express.use('/api/v1/auth', AuthRouter)
   }
 
 }
