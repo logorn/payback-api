@@ -6,9 +6,18 @@ export class UserModel {
 	public phone: string
 	public company: number
 
-	constructor () {}
+	constructor(){}
 
-	isValidPassword () {
+	mapper(userObject: any){
+		this.company = Number(userObject.company)
+		this.email = userObject.email
+		this.confirmPassword = userObject.confirmPassword
+		this.password = userObject.password
+		this.name = userObject.name
+		this.phone = userObject.phone
+	}
+
+	isValidPassword(){
 		return this.password !== undefined 
 		&& this.confirmPassword !== undefined 
 		&& this.password !== "" 
@@ -20,7 +29,7 @@ export class UserModel {
 		&& this.password.length >= 6
 	}
 
-	isValidName () {
+	isValidName(){
 		return this.name !== undefined 
 		&& this.name !== "" 
 		&& this.name.match(/\w/g) !== null 
@@ -31,7 +40,7 @@ export class UserModel {
 		&& this.name.match(/[^A-Za-z0-9\s\.\-\']/g) === null
 	}
 
-	isValidPhone () {
+	isValidPhone(){
 		return this.phone !== undefined 
 		&& this.phone !== ""
 		&& this.phone.match(/\d/g) !== null 
@@ -41,12 +50,12 @@ export class UserModel {
 		&& this.phone.match(/[^A-Za-z0-9\s]/g) === null
 	}
 
-	isValidCompany () {
+	isValidCompany(){
 		return this.company !== undefined 
 		&& this.company > 0
 	}
 
-	isValid () {
+	isValid(){
 		return this.isValidCompany()
 		&& this.isValidName()
 		&& this.isValidPassword()

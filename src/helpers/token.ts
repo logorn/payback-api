@@ -1,5 +1,5 @@
-import * as jwt from 'jsonwebtoken'
-var config = require('../config')
+const jwt = require('jsonwebtoken')
+const config = require('../config')
 
 export class TokenHelper{
 
@@ -12,5 +12,13 @@ export class TokenHelper{
 		 			resolve(decoded)
 		 	})
 		})
+	}
+
+	static generatePublic(){
+		return jwt.sign({ access: 'public' }, config.tokenSecret, { expiresIn: '15m' })
+	}
+
+	static generatePrivate(){
+		return jwt.sign({ access: 'private' }, config.tokenSecret, { expiresIn: '1h' })
 	}
 }
