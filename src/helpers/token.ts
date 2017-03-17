@@ -15,7 +15,7 @@ export class TokenHelper{
 	}
 
 	static generatePublic(){
-		return jwt.sign({ access: 'public' }, config.tokenSecret, { expiresIn: '15m' })
+		return jwt.sign({ access: 'public' }, config.tokenSecret, { expiresIn: '1d' })
 	}
 
 	static generatePrivate(){

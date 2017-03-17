@@ -7,17 +7,11 @@ export class UserProvider{
 	
 	constructor(){}
 
-	public connect(){
-		console.log("connecting to mongodb")
+	public static connect(){
 		return new Promise((resolve, reject) => {
-			console.log("entrando na promisse")
-			console.log(config.mongodb.users)
-			
 			MongoClient.connect(config.mongodb.users, (err, db) => {
-				console.log(err)
-				console.log(db)
 				if(err !== null){
-					console.log('Err: ' + err)
+					console.log(err)
 					reject(err)
 				}else{
 					console.log("Connected successfully to server...")
@@ -27,7 +21,7 @@ export class UserProvider{
 		})
 	}
 
-	public createOne(db, user: UserModel){
+	public static createOne(db, user: UserModel){
 		return new Promise((resolve, reject) => {
 			db.collection("users")
 			.insertOne(user, (err, result) => {
@@ -42,8 +36,7 @@ export class UserProvider{
 		})
 	}
 
-	public getAll(db){
-		console.log("db: " + db)
+	public static getAll(db){
 		return new Promise((resolve, reject) => {
 			db.collection("users")
 			.find({})
@@ -61,7 +54,7 @@ export class UserProvider{
 		})
 	}
 
-	public getOne(db, id: string){
+	public static getOne(db, id: string){
 		return new Promise((resolve, reject) => {
 			db.collection("users")
 			.findOne({
