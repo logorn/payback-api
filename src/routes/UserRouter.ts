@@ -8,7 +8,7 @@ export class UserRouter{
 	private userProvider: UserProvider
 
 	constructor(){
-		this.router = Router() 
+		this.router = Router()
 		this.init()
 	}
 
@@ -22,13 +22,13 @@ export class UserRouter{
 			.then(db => UserProvider.createOne(db, user))
 			.then(status => res.send(status))
 			.catch(err => {
-				switch (err.code) {
+				switch(err.code){
 					case 11000:
 						res.status(401).send('email_already_exists')
-						break;
+						break
 					default:
-						res.status(500).send('')
-						break;
+						res.status(500).send()
+						break
 				}
 			})
 		}else{
@@ -45,7 +45,7 @@ export class UserRouter{
 	}
 
 	public getOne(req: Request, res: Response, next: NextFunction){
-		var id = req.params.id
+		let id = req.params.id
 
 		TokenHelper.verify(req.headers['x-access-token'])
 		.then(() => UserProvider.connect())
@@ -55,14 +55,14 @@ export class UserRouter{
 	}
 
 	init(){
-		this.router.get('/', this.getAll) 
-		this.router.get('/:id', this.getOne) 
+		this.router.get('/', this.getAll)
+		this.router.get('/:id', this.getOne)
 		this.router.post('/', this.createOne)
 	}
 
 }
 
-const userRoutes = new UserRouter() 
-userRoutes.init() 
+const userRoutes = new UserRouter()
+userRoutes.init()
 
-export default userRoutes.router 
+export default userRoutes.router

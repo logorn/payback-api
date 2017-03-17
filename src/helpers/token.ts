@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken')
 const config = require('../config')
 
 export class TokenHelper{
-
 	constructor(){}
 
 	static verify(token: string){

@@ -1,37 +1,24 @@
 import { UserModel } from '../model/user'
-const MongoClient = require('mongodb').MongoClient 
+import { MongoClient } from '../helpers/mongodb'
+
 const ObjectId = require('mongodb').ObjectId
-const config = require('../config')
 
 export class UserProvider{
 	
 	constructor(){}
 
 	public static connect(){
-		return new Promise((resolve, reject) => {
-			MongoClient.connect(config.mongodb.users, (err, db) => {
-				if(err !== null){
-					console.log(err)
-					reject(err)
-				}else{
-					console.log("Connected successfully to server...")
-					resolve(db)
-				}
-			})
-		})
+		return MongoClient.connect(MongoClient.clusters.users)
 	}
 
 	public static createOne(db, user: UserModel){
 		return new Promise((resolve, reject) => {
 			db.collection("users")
 			.insertOne(user, (err, result) => {
-				if(err !== null){
-					db.close()
+				db.close()
+				if(err)
 					reject(err)
-				}else{
-					db.close()
 					resolve(result)
-				}
 			})
 		})
 	}
@@ -41,15 +28,10 @@ export class UserProvider{
 			db.collection("users")
 			.find({})
 			.toArray((err, users) => {
-				if(err !== null){
-					console.log(err)
-					db.close()
+				db.close()
+				if(err)
 					reject(err)
-				}else{
-					console.log(users)
-					db.close()
 					resolve(users)
-				}
 			})
 		})
 	}
@@ -60,13 +42,10 @@ export class UserProvider{
 			.findOne({
 				"_id": ObjectId(id)
 			}, (err, user) => {
-				if(err !== null){
-					db.close()
+				db.close()
+				if(err) 
 					reject(err)
-				}else{
-					db.close()
 					resolve(user)
-				}
 			})
 		})
 	}

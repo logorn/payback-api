@@ -1,6 +1,7 @@
 {
-  "mongodb": {
-  	"users": "mongodb://localhost:27017/data"
+  "clusters": {
+  	"users": "mongodb://localgost:27017/data",
+  	"auth": "mongodb://localgost:27017/data"
   },
-  "tokenSecret": "littlesecret"
+  "tokenSecret": "mylittltinyesecret"
 }

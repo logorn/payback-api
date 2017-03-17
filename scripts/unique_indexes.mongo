@@ -1,2 +1,2 @@
 db = connect("localhost:666/data")
-db.users.createIndex({"email": 1}, {unique: true})
+db.users.createIndex( { email: 1 }, { unique: true, sparse: true } )
