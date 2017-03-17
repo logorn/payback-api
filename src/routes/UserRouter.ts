@@ -21,7 +21,16 @@ export class UserRouter{
 			.then(() => UserProvider.connect())
 			.then(db => UserProvider.createOne(db, user))
 			.then(status => res.send(status))
-			.catch(err => res.status(401).send(err))
+			.catch(err => {
+				switch (err.code) {
+					case 11000:
+						res.status(401).send('email_already_exists')
+						break;
+					default:
+						res.status(500).send('')
+						break;
+				}
+			})
 		}else{
 			res.status(406).send('not_valid')
 		}

@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express'
 import { UserModel } from '../model/user'
 import { TokenHelper } from '../helpers/token'
+import { AuthProvider } from '../providers/AuthProvider'
 
 export class AuthRouter{
 	public router: Router
@@ -15,12 +16,20 @@ export class AuthRouter{
 	}
 
 	public auth(req: Request, res: Response, next: NextFunction){
-		res.send(TokenHelper.generatePrivate())
+		let user = new UserModel()
+		user.email = req.body.email
+		user.password = req.body.password
+
+		TokenHelper.verify(req.headers['x-access-token'])
+		.then(() => AuthProvider.connect())
+		.then(db => AuthProvider.authUser(db, user))
+		.then(token => res.send(token))
+		.catch(err => res.status(401).send(err))
 	}
 
 	init(){
 		this.router.get('/', this.getToken) 
-		this.router.post('/', this.auth) 
+		this.router.post('/', this.auth)
 	}
 }
 
