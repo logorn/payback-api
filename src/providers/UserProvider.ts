@@ -52,36 +52,22 @@ export class UserProvider{
 		})
 	}
 
-	public static changePassword(db, id: string, newPassword: string){
-		let criteria = {"_id": ObjectId(id)}
-		let update = {password: newPassword}
-
-		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.update(criteria, update, (err, user) => {
-				db.close()
-				if(err) 
-					reject(err)
-					resolve(user)
-			})
-		})
-	}
-
 	public static verifyPassword(db, id: string, password: string){
 		return new Promise((resolve, reject) => {
 			db.collection("users")
 			.findOne({
 				"_id": ObjectId(id)
 			}, (err, user) => {
-
 				if(err){
 					db.close()
-					reject(err)	
+					reject(err)
 				}else if(user.password === password){
 					resolve(db)
-				}else {
+				}else{
 					db.close()
-					reject(false)
+					reject({
+						message: "invalid_password"
+					})
 				}
 			})
 		})
@@ -141,4 +127,25 @@ export class UserProvider{
 		})
 	}
 
+	public static changePassword(db, id: string, newPassword: string){
+		let criteria = {"_id": ObjectId(id)}
+		let collection = db.collection("users")
+
+		return new Promise((resolve, reject) => {
+			collection.findOne(criteria, (err, user) => {
+				if(err){
+					db.close()
+					reject(err)
+				}else{
+					user.password = newPassword
+					collection.update(criteria, user, (err, user) => {
+						db.close()
+						if(err)
+							reject(err)
+							resolve("password_changed")
+					})
+				}
+			})
+		})
+	}
 }
