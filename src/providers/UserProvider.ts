@@ -1,5 +1,7 @@
 import { UserModel } from '../model/user'
 import { MongoClient } from '../helpers/mongodb'
+import { MailHelper } from '../helpers/mail'
+import { RandomHelper } from '../helpers/random'
 
 const ObjectId = require('mongodb').ObjectId
 
@@ -49,4 +51,94 @@ export class UserProvider{
 			})
 		})
 	}
+
+	public static changePassword(db, id: string, newPassword: string){
+		let criteria = {"_id": ObjectId(id)}
+		let update = {password: newPassword}
+
+		return new Promise((resolve, reject) => {
+			db.collection("users")
+			.update(criteria, update, (err, user) => {
+				db.close()
+				if(err) 
+					reject(err)
+					resolve(user)
+			})
+		})
+	}
+
+	public static verifyPassword(db, id: string, password: string){
+		return new Promise((resolve, reject) => {
+			db.collection("users")
+			.findOne({
+				"_id": ObjectId(id)
+			}, (err, user) => {
+
+				if(err){
+					db.close()
+					reject(err)	
+				}else if(user.password === password){
+					resolve(db)
+				}else {
+					db.close()
+					reject(false)
+				}
+			})
+		})
+	}
+
+	public static verifyEmail(db, email: string){
+		return new Promise((resolve, reject) => {
+			db.collection("users")
+			.findOne({
+				"email": email
+			}, (err, user) => {
+
+				if(err){
+					db.close()
+					reject(err)	
+				}else if(user){
+					resolve(db)
+				}else {
+					db.close()
+					reject({
+						message: 'email_not_found'
+					})
+				}
+			})
+		})
+	}
+
+	public static sendRecoverPasswordEmail(email: string, newPassword: string){
+		return MailHelper.sendMail(
+			email, 
+			'Recover password', 
+			`Your new password is: ${newPassword}`, 
+			`<p>Your new password is: <b>${newPassword}</b></p>`)
+	}
+
+	public static changePasswordByEmail(db, email: string){
+		let newPassword = RandomHelper.generate(8)
+		let collection = db.collection("users")
+
+		return new Promise((resolve, reject) => {
+			
+			collection.findOne({email}, (err, user) => {
+				if(err){
+					db.close()
+					reject(err)
+				}else{
+					user.password = newPassword
+					collection.update({email}, user, (err, user) => {
+						db.close()
+						if(err) 
+							reject(err)
+							resolve(newPassword)
+					})
+				}
+			})
+			
+		})
+	}
+
 }

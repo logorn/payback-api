@@ -54,9 +54,36 @@ export class UserRouter{
 		.catch(err => res.status(401).send(err))
 	}
 
+	public changePassword(req: Request, res: Response, next: NextFunction){
+		let id = req.params.id
+		let old_password = req.body.old_password
+		let new_password = req.body.new_password
+
+		TokenHelper.verify(req.headers['x-access-token'])
+		.then(() => UserProvider.connect())
+		.then(db => UserProvider.verifyPassword(db, id, old_password))
+		.then(db => UserProvider.changePassword(db, id, new_password))
+		.then(status => res.send(status))
+		.catch(err => res.status(401).send(err))
+	}
+
+	public recoverPassword(req: Request, res: Response, next: NextFunction){
+		let email = req.body.email
+
+		TokenHelper.verify(req.headers['x-access-token'])
+		.then(() => UserProvider.connect())
+		.then(db => UserProvider.verifyEmail(db, email))
+		.then(db => UserProvider.changePasswordByEmail(db, email))
+		.then(newPassword => UserProvider.sendRecoverPasswordEmail(email, newPassword))
+		.then(status => res.send(status))
+		.catch(err => res.status(401).send(err))
+	}
+
 	init(){
 		this.router.get('/', this.getAll)
 		this.router.get('/:id', this.getOne)
+		this.router.post('/:id/change_password', this.changePassword)
+		this.router.post('/recover_password', this.recoverPassword)
 		this.router.post('/', this.createOne)
 	}
 
