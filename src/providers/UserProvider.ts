@@ -1,96 +1,114 @@
+const MongoClient = require('mongodb').MongoClient 
+const ObjectId = require('mongodb').ObjectId
+const config = require('../config.json')
+
 import { UserModel } from '../model/user'
-import { MongoClient } from '../helpers/mongodb'
 import { MailHelper } from '../helpers/mail'
 import { RandomHelper } from '../helpers/random'
-
-const ObjectId = require('mongodb').ObjectId
 
 export class UserProvider{
 	
 	constructor(){}
 
-	public static connect(){
-		return MongoClient.connect(MongoClient.clusters.users)
-	}
-
-	public static createOne(db, user: UserModel){
+	public static createOne(user: UserModel){
 		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.insertOne(user, (err, result) => {
-				db.close()
-				if(err)
-					reject(err)
-					resolve(result)
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.insertOne(user, (err, result) => {
+					db.close()
+					if(err)
+						reject(err)
+						resolve(result)
+				})
 			})
 		})
 	}
 
-	public static getAll(db){
+	public static getAll(){
 		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.find({})
-			.toArray((err, users) => {
-				db.close()
-				if(err)
-					reject(err)
-					resolve(users)
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.find({})
+				.toArray((err, users) => {
+					db.close()
+					if(err)
+						reject(err)
+						resolve(users)
+				})
 			})
 		})
 	}
 
-	public static getOne(db, id: string){
+	public static getOne(id: string){
 		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.findOne({
-				"_id": ObjectId(id)
-			}, (err, user) => {
-				db.close()
-				if(err) 
-					reject(err)
-					resolve(user)
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.findOne({
+					"_id": ObjectId(id)
+				}, (err, user) => {
+					db.close()
+					if(err) 
+						reject(err)
+						resolve(user)
+				})
 			})
 		})
 	}
 
-	public static verifyPassword(db, id: string, password: string){
+	public static verifyPassword(id: string, password: string){
+
 		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.findOne({
-				"_id": ObjectId(id)
-			}, (err, user) => {
-				if(err){
-					db.close()
-					reject(err)
-				}else if(user.password === password){
-					resolve(db)
-				}else{
-					db.close()
-					reject({
-						message: "invalid_password"
-					})
-				}
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.findOne({
+					"_id": ObjectId(id)
+				}, (err, user) => {
+					if(err){
+						db.close()
+						reject(err)
+					}else if(user.password === password){
+						resolve()
+					}else{
+						db.close()
+						reject({
+							message: "invalid_password"
+						})
+					}
+				})
 			})
 		})
 	}
 
-	public static verifyEmail(db, email: string){
+	public static verifyEmail(email: string){
 		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.findOne({
-				"email": email
-			}, (err, user) => {
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
 
-				if(err){
-					db.close()
-					reject(err)	
-				}else if(user){
-					resolve(db)
-				}else {
-					db.close()
-					reject({
-						message: 'email_not_found'
-					})
-				}
+				db.collection("users")
+				.findOne({
+					"email": email
+				}, (err, user) => {
+
+					if(err){
+						db.close()
+						reject(err)	
+					}else if(user){
+						resolve()
+					}else {
+						db.close()
+						reject({
+							message: 'email_not_found'
+						})
+					}
+				})
 			})
 		})
 	}
@@ -103,48 +121,54 @@ export class UserProvider{
 			`<p>Your new password is: <b>${newPassword}</b></p>`)
 	}
 
-	public static changePasswordByEmail(db, email: string){
-		let newPassword = RandomHelper.generate(8)
-		let collection = db.collection("users")
-
+	public static changePasswordByEmail(email: string, newPassword: string){
 		return new Promise((resolve, reject) => {
-			
-			collection.findOne({email}, (err, user) => {
-				if(err){
-					db.close()
-					reject(err)
-				}else{
-					user.password = newPassword
-					collection.update({email}, user, (err, user) => {
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.findOne({email}, (err, user) => {
+					if(err){
 						db.close()
-						if(err) 
-							reject(err)
-							resolve(newPassword)
-					})
-				}
+						reject(err)
+					}else{
+						user.password = newPassword
+						db.collection("users")
+						.update({email}, user, (err, user) => {
+							db.close()
+							if(err) 
+								reject(err)
+								resolve()
+						})
+					}
+				})
 			})
-			
 		})
 	}
 
-	public static changePassword(db, id: string, newPassword: string){
+	public static changePassword(id: string, newPassword: string){
 		let criteria = {"_id": ObjectId(id)}
-		let collection = db.collection("users")
 
 		return new Promise((resolve, reject) => {
-			collection.findOne(criteria, (err, user) => {
-				if(err){
-					db.close()
-					reject(err)
-				}else{
-					user.password = newPassword
-					collection.update(criteria, user, (err, user) => {
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.findOne(criteria, (err, user) => {
+					if(err){
 						db.close()
-						if(err)
-							reject(err)
-							resolve("password_changed")
-					})
-				}
+						reject(err)
+					}else{
+						user.password = newPassword
+						db.collection("users")
+						.update(criteria, user, (err, user) => {
+							db.close()
+							if(err)
+								reject(err)
+								resolve("password_changed")
+						})
+					}
+				})
 			})
 		})
 	}

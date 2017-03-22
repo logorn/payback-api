@@ -13,9 +13,9 @@ export class TokenHelper{
 		})
 	}
 
-	static verifyCustom(token: string, secret: string){
+	static verifyCustom(token: string){
 		return new Promise((resolve, reject) => {
-			jwt.verify(token, secret, (err, decoded) => {
+			jwt.verify(token, config.tokenSecret, (err, decoded) => {
 		 		if(err) reject(err)
 		 			resolve(decoded)
 		 	})
@@ -27,10 +27,10 @@ export class TokenHelper{
 	}
 
 	static generatePrivate(){
-		return jwt.sign({ access: 'private' }, config.tokenSecret, { expiresIn: '1h' })
+		return jwt.sign({ access: 'private' }, config.tokenSecret, { expiresIn: '1d' })
 	}
 
-	static generateCustom(object: Object){
-		return jwt.sign(object, config.tokenSecret, { expiresIn: '7d' })	
+	static generateCustom(customObject: Object, expirationTime: string){
+		return jwt.sign(customObject, config.tokenSecret, { expiresIn: expirationTime })	
 	}
 }

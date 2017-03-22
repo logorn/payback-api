@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { UserProvider } from '../providers/UserProvider'
 import { UserModel } from '../model/user'
 import { TokenHelper } from '../helpers/token'
+import { RandomHelper } from '../helpers/random'
 
 export class UserRouter{
 	public router: Router
@@ -18,8 +19,7 @@ export class UserRouter{
 		
 		if(user.isValid()){
 			TokenHelper.verify(req.headers['x-access-token'])
-			.then(() => UserProvider.connect())
-			.then(db => UserProvider.createOne(db, user))
+			.then(() => UserProvider.createOne(user))
 			.then(status => res.send(status))
 			.catch(err => {
 				switch(err.code){
@@ -38,8 +38,7 @@ export class UserRouter{
 
 	public getAll(req: Request, res: Response, next: NextFunction){
 		TokenHelper.verify(req.headers['x-access-token'])
-		.then(() => UserProvider.connect())
-		.then(db => UserProvider.getAll(db))
+		.then(() => UserProvider.getAll())
 		.then(users => res.send(users))
 		.catch(err => res.status(401).send(err))
 	}
@@ -48,33 +47,31 @@ export class UserRouter{
 		let id = req.params.id
 
 		TokenHelper.verify(req.headers['x-access-token'])
-		.then(() => UserProvider.connect())
-		.then(db => UserProvider.getOne(db, id))
+		.then(() => UserProvider.getOne(id))
 		.then(user => res.send(user))
 		.catch(err => res.status(401).send(err))
 	}
 
 	public changePassword(req: Request, res: Response, next: NextFunction){
 		let id = req.params.id
-		let old_password = req.body.old_password
-		let new_password = req.body.new_password
+		let oldPassword = req.body.old_password
+		let newPassword = req.body.new_password
 
 		TokenHelper.verify(req.headers['x-access-token'])
-		.then(() => UserProvider.connect())
-		.then(db => UserProvider.verifyPassword(db, id, old_password))
-		.then(db => UserProvider.changePassword(db, id, new_password))
+		.then(() => UserProvider.verifyPassword(id, oldPassword))
+		.then(() => UserProvider.changePassword(id, newPassword))
 		.then(status => res.send(status))
 		.catch(err => res.status(401).send(err))
 	}
 
 	public recoverPassword(req: Request, res: Response, next: NextFunction){
 		let email = req.body.email
+		let newPassword = RandomHelper.generatePassword(8)
 
 		TokenHelper.verify(req.headers['x-access-token'])
-		.then(() => UserProvider.connect())
-		.then(db => UserProvider.verifyEmail(db, email))
-		.then(db => UserProvider.changePasswordByEmail(db, email))
-		.then(newPassword => UserProvider.sendRecoverPasswordEmail(email, newPassword))
+		.then(() => UserProvider.verifyEmail(email))
+		.then(() => UserProvider.changePasswordByEmail(email, newPassword))
+		.then(() => UserProvider.sendRecoverPasswordEmail(email, newPassword))
 		.then(status => res.send(status))
 		.catch(err => res.status(401).send(err))
 	}

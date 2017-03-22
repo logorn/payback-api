@@ -21,8 +21,7 @@ export class AuthRouter{
 		user.password = req.body.password
 
 		TokenHelper.verify(req.headers['x-access-token'])
-		.then(() => AuthProvider.connect())
-		.then(db => AuthProvider.authUser(db, user))
+		.then(() => AuthProvider.authUser(user))
 		.then(token => res.send(token))
 		.catch(err => res.status(401).send(err))
 	}

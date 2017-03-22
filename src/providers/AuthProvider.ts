@@ -1,27 +1,31 @@
+const MongoClient = require('mongodb').MongoClient 
+const ObjectId = require('mongodb').ObjectId
+const config = require('../config.json')
+
 import { UserModel } from '../model/user'
 import { TokenHelper } from '../helpers/token'
-import { MongoClient } from '../helpers/mongodb'
 
 export class AuthProvider{
 	
 	constructor(){}
 
-	public static connect(){
-		return MongoClient.connect(MongoClient.clusters.auth)
-	}
-
-	public static authUser(db, currentUser: UserModel){
+	public static authUser(currentUser: UserModel){
 		let query = { email: currentUser.email }
 
 		return new Promise((resolve, reject) => {
-			db.collection("users")
-			.findOne(query, (err, user) => {
-				if(err){
-					reject(err)	
-				}else{
-					if(user.password === currentUser.password) resolve({access_token: TokenHelper.generatePrivate()})
-						reject("invalid_password")
-				}
+			MongoClient.connect(config.clusters.users, (err, db) => {
+				if(err) reject(err)
+
+				db.collection("users")
+				.findOne(query, (err, user) => {
+					if(err){
+						reject(err)	
+					}else{
+						if(user.password === currentUser.password) 
+							resolve({access_token: TokenHelper.generatePrivate()})
+							reject("invalid_password")
+					}
+				})
 			})
 		})
 	}
