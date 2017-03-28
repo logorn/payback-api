@@ -1,7 +1,8 @@
 {
   "clusters": {
   	"users": "mongodb://localgost:27017/data",
-  	"auth": "mongodb://localgost:27017/data"
+  	"auth": "mongodb://localgost:27017/data",
+  	"refunds": "mongodb://localgost:27017/data"
   },
   "tokenSecret": "mylittltinyesecret"
 }
