@@ -15,6 +15,18 @@ $ npm install -g gulp
 $ gulp assets && gulp scripts
 $ npm start
 ```
+### Rotas disponíveis
+* GET /api/v1/auth
+* POST /api/v1/auth
+* GET /api/v1/users
+* GET /api/v1/users/:id
+* POST /api/v1/users
+* POST /api/v1/:id/change_password
+* POST /api/v1/recover_password
+Em breve terá uma documentação completa para cada rota
+
+### Contribuições
+Suas contribuições serão muito úteis aqui. Sinta-se à vontade para enviar suas sugestões.
 
 ### Links úteis:
 * https://docs.mongodb.com/manual/installation/
