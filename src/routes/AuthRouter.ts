@@ -11,11 +11,11 @@ export class AuthRouter{
 		this.init()
 	}
 
-	public getToken(req: Request, res: Response, next: NextFunction){
+	private getToken(req: Request, res: Response, next: NextFunction){
 		res.send(TokenHelper.generatePublic())
 	}
 
-	public auth(req: Request, res: Response, next: NextFunction){
+	private auth(req: Request, res: Response, next: NextFunction){
 		let user = new UserModel()
 		user.email = req.body.email
 		user.password = req.body.password

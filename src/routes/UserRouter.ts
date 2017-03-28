@@ -13,7 +13,7 @@ export class UserRouter{
 		this.init()
 	}
 
-	public createOne(req: Request, res: Response, next: NextFunction){
+	private createOne(req: Request, res: Response, next: NextFunction){
 		let user = new UserModel()
 		user.mapper(req.body)
 		
@@ -36,14 +36,14 @@ export class UserRouter{
 		}
 	}
 
-	public getAll(req: Request, res: Response, next: NextFunction){
+	private getAll(req: Request, res: Response, next: NextFunction){
 		TokenHelper.verify(req.headers['x-access-token'])
 		.then(() => UserProvider.getAll())
 		.then(users => res.send(users))
 		.catch(err => res.status(401).send(err))
 	}
 
-	public getOne(req: Request, res: Response, next: NextFunction){
+	private getOne(req: Request, res: Response, next: NextFunction){
 		let id = req.params.id
 
 		TokenHelper.verify(req.headers['x-access-token'])
@@ -52,7 +52,7 @@ export class UserRouter{
 		.catch(err => res.status(401).send(err))
 	}
 
-	public changePassword(req: Request, res: Response, next: NextFunction){
+	private changePassword(req: Request, res: Response, next: NextFunction){
 		let id = req.params.id
 		let oldPassword = req.body.old_password
 		let newPassword = req.body.new_password
@@ -64,7 +64,7 @@ export class UserRouter{
 		.catch(err => res.status(401).send(err))
 	}
 
-	public recoverPassword(req: Request, res: Response, next: NextFunction){
+	private recoverPassword(req: Request, res: Response, next: NextFunction){
 		let email = req.body.email
 		let newPassword = RandomHelper.generatePassword(8)
 

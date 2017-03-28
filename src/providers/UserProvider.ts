@@ -4,7 +4,6 @@ const config = require('../config.json')
 
 import { UserModel } from '../model/user'
 import { MailHelper } from '../helpers/mail'
-import { RandomHelper } from '../helpers/random'
 
 export class UserProvider{
 	
