@@ -14,7 +14,13 @@ export class RefundModel {
 		this.isApproved = undefined
 		this.status = "pendente"
 		this.expenseDate = new Date().toISOString()
-		this.user = new UserModel()
+	}
+
+	mapper(refund: any){
+		this.checkingCopy = refund.checkingCopy
+		this.costCenter = refund.costCenter
+		this.user = refund.user
+		this.totalPrice = refund.totalPrice
 	}
 
 	isValidCostCenter () {
@@ -24,5 +30,10 @@ export class RefundModel {
 	isValidTotalPrice () {
 		return this.totalPrice !== undefined
 		&& this.totalPrice !== 0
+	}
+
+	isValid(){
+		return this.isValidCostCenter()
+		&& this.isValidTotalPrice()
 	}
 }

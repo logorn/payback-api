@@ -12,7 +12,8 @@ export class UserProvider{
 	public static createOne(user: UserModel){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
+				if(err) 
+					reject(err)
 
 				db.collection("users")
 				.insertOne(user, (err, result) => {
@@ -28,16 +29,18 @@ export class UserProvider{
 	public static getAll(){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
-
-				db.collection("users")
-				.find({})
-				.toArray((err, users) => {
-					db.close()
-					if(err)
-						reject(err)
-						resolve(users)
-				})
+				if(err){
+					reject(err)
+				}else{
+					db.collection("users")
+					.find({})
+					.toArray((err, users) => {
+						db.close()
+						if(err)
+							reject(err)
+							resolve(users)
+					})
+				}
 			})
 		})
 	}
@@ -45,17 +48,19 @@ export class UserProvider{
 	public static getOne(id: string){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
-
-				db.collection("users")
-				.findOne({
-					"_id": ObjectId(id)
-				}, (err, user) => {
-					db.close()
-					if(err) 
-						reject(err)
-						resolve(user)
-				})
+				if(err){
+					reject(err)
+				}else{
+					db.collection("users")
+					.findOne({
+						"_id": ObjectId(id)
+					}, (err, user) => {
+						db.close()
+						if(err) 
+							reject(err)
+							resolve(user)
+					})	
+				}
 			})
 		})
 	}
@@ -64,24 +69,26 @@ export class UserProvider{
 
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
-
-				db.collection("users")
-				.findOne({
-					"_id": ObjectId(id)
-				}, (err, user) => {
-					if(err){
-						db.close()
-						reject(err)
-					}else if(user.password === password){
-						resolve()
-					}else{
-						db.close()
-						reject({
-							message: "invalid_password"
-						})
-					}
-				})
+				if(err){
+					reject(err)
+				}else{
+					db.collection("users")
+					.findOne({
+						"_id": ObjectId(id)
+					}, (err, user) => {
+						if(err){
+							db.close()
+							reject(err)
+						}else if(user.password === password){
+							resolve()
+						}else{
+							db.close()
+							reject({
+								message: "invalid_password"
+							})
+						}
+					})	
+				}
 			})
 		})
 	}
@@ -89,25 +96,27 @@ export class UserProvider{
 	public static verifyEmail(email: string){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
+				if(err){
+					reject(err)
+				}else{
+					db.collection("users")
+					.findOne({
+						"email": email
+					}, (err, user) => {
 
-				db.collection("users")
-				.findOne({
-					"email": email
-				}, (err, user) => {
-
-					if(err){
-						db.close()
-						reject(err)	
-					}else if(user){
-						resolve()
-					}else {
-						db.close()
-						reject({
-							message: 'email_not_found'
-						})
-					}
-				})
+						if(err){
+							db.close()
+							reject(err)	
+						}else if(user){
+							resolve()
+						}else {
+							db.close()
+							reject({
+								message: 'email_not_found'
+							})
+						}
+					})	
+				}
 			})
 		})
 	}
@@ -123,24 +132,26 @@ export class UserProvider{
 	public static changePasswordByEmail(email: string, newPassword: string){
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
-
-				db.collection("users")
-				.findOne({email}, (err, user) => {
-					if(err){
-						db.close()
-						reject(err)
-					}else{
-						user.password = newPassword
-						db.collection("users")
-						.update({email}, user, (err, user) => {
+				if(err){
+					reject(err)
+				}else{
+					db.collection("users")
+					.findOne({email}, (err, user) => {
+						if(err){
 							db.close()
-							if(err) 
-								reject(err)
-								resolve()
-						})
-					}
-				})
+							reject(err)
+						}else{
+							user.password = newPassword
+							db.collection("users")
+							.update({email}, user, (err, user) => {
+								db.close()
+								if(err) 
+									reject(err)
+									resolve()
+							})
+						}
+					})	
+				}
 			})
 		})
 	}
@@ -150,24 +161,26 @@ export class UserProvider{
 
 		return new Promise((resolve, reject) => {
 			MongoClient.connect(config.clusters.users, (err, db) => {
-				if(err) reject(err)
-
-				db.collection("users")
-				.findOne(criteria, (err, user) => {
-					if(err){
-						db.close()
-						reject(err)
-					}else{
-						user.password = newPassword
-						db.collection("users")
-						.update(criteria, user, (err, user) => {
+				if(err){
+					reject(err)
+				}else{
+					db.collection("users")
+					.findOne(criteria, (err, user) => {
+						if(err){
 							db.close()
-							if(err)
-								reject(err)
-								resolve("password_changed")
-						})
-					}
-				})
+							reject(err)
+						}else{
+							user.password = newPassword
+							db.collection("users")
+							.update(criteria, user, (err, user) => {
+								db.close()
+								if(err)
+									reject(err)
+									resolve("password_changed")
+							})
+						}
+					})	
+				}
 			})
 		})
 	}
